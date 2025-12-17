@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PackMate - Smart Packing Checklist</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // This configuration is necessary for Tailwind to support the 'dark' class strategy
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; }
+        
+        /* Smooth transitions for theme switching */
+        body { transition: background-color 0.3s, color 0.3s; }
+        .card-transition { transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen font-sans transition-colors duration-300">
+    <div id="app" class="max-w-2xl mx-auto p-4 md:p-8">
+        <!-- Header -->
+        <header class="mb-8 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <i data-lucide="backpack" class="text-blue-500 w-8 h-8"></i>
+                <h1 class="text-3xl font-bold tracking-tight">PackMate</h1>
+            </div>
+            <button id="theme-toggle" class="p-2 rounded-full bg-white dark:bg-slate-800 text-slate-500 dark:text-yellow-400 shadow-sm border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all">
+                <i data-lucide="moon" id="theme-icon" class="w-5 h-5"></i>
+            </button>
+        </header>
+
+        <!-- Holiday Type Selector -->
+        <div id="type-selector" class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
+            <!-- Buttons injected by JS -->
+        </div>
+
+        <!-- Main Card -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden border border-slate-100 dark:border-slate-800 card-transition">
+            
+            <!-- Progress Header -->
+            <div id="progress-header" class="p-6 transition-colors duration-500">
+                <div class="flex justify-between items-end mb-4">
+                    <div>
+                        <h2 id="category-title" class="text-xl font-bold flex items-center gap-2">
+                            <!-- Icon and Title injected by JS -->
+                        </h2>
+                        <p id="progress-text" class="text-sm opacity-80 font-medium">
+                            0 of 0 items packed
+                        </p>
+                    </div>
+                    <div id="progress-percent" class="text-3xl font-black">0%</div>
+                </div>
+                <div class="w-full h-3 rounded-full overflow-hidden bg-black/10 dark:bg-black/40">
+                    <div id="progress-bar" class="h-full bg-current transition-all duration-700 ease-out" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <!-- Add Item Form -->
+                <form id="add-item-form" class="flex gap-2 mb-6">
+                    <input
+                        type="text"
+                        id="new-item-input"
+                        placeholder="Add something else..."
+                        class="flex-1 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 border-none transition-all bg-slate-100 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500"
+                    />
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-all flex items-center gap-1 px-4 font-semibold active:scale-95">
+                        <i data-lucide="plus" class="w-5 h-5"></i>
+                        Add
+                    </button>
+                </form>
+
+                <!-- Items List -->
+                <div id="items-container" class="space-y-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                    <!-- List items injected by JS -->
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="mt-8 flex justify-between items-center border-t border-slate-100 dark:border-slate-800 pt-6">
+                    <button id="reset-btn" class="text-xs font-bold text-slate-500 hover:text-blue-500 dark:hover:text-blue-400 uppercase tracking-widest flex items-center gap-2 transition-colors">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                        Reset Defaults
+                    </button>
+                    <div class="text-[10px] text-slate-500 italic">
+                        Local storage active
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips Section -->
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 transition-colors">
+                <h4 class="font-bold text-xs text-slate-500 uppercase mb-2">Pro Tip</h4>
+                <p class="text-sm text-slate-600 dark:text-slate-400">Roll clothes instead of folding to save space.</p>
+            </div>
+            <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 transition-colors">
+                <h4 class="font-bold text-xs text-slate-500 uppercase mb-2">Security</h4>
+                <p class="text-sm text-slate-600 dark:text-slate-400">Email a photo of your passport to yourself.</p>
+            </div>
+            <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 transition-colors">
+                <h4 class="font-bold text-xs text-slate-500 uppercase mb-2">Weight</h4>
+                <p class="text-sm text-slate-600 dark:text-slate-400">Wear your heaviest shoes on the plane.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const HOLIDAY_TYPES = {
+            GENERAL: { id: 'GENERAL', label: 'General', icon: 'backpack', color: 'bg-green-100 text-green-600 dark:bg-green-900/40 dark:text-green-400', items: ['Passport', 'Charger', 'Toothbrush', 'Underwear', 'Pyjamas'] },
+            BEACH: { id: 'BEACH', label: 'Beach', icon: 'sun', color: 'bg-orange-100 text-orange-600 dark:bg-orange-900/40 dark:text-orange-400', items: ['Swimwear', 'Sunscreen', 'Sunglasses', 'Beach towel', 'Flip flops'] },
+            SKI: { id: 'SKI', label: 'Skiing', icon: 'snowflake', color: 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400', items: ['Ski jacket', 'Thermals', 'Goggles', 'Gloves', 'Ski socks'] },
+            CITY: { id: 'CITY', label: 'City', icon: 'map-pin', color: 'bg-purple-100 text-purple-600 dark:bg-purple-900/40 dark:text-purple-400', items: ['Walking shoes', 'Power bank', 'City map', 'Camera', 'Adapter'] },
+            BUSINESS: { id: 'BUSINESS', label: 'Business', icon: 'briefcase', color: 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-400', items: ['Laptop', 'Business cards', 'Formal wear', 'Notebook', 'Dress shoes'] }
+        };
+
+        // State
+        let currentType = localStorage.getItem('packmate_type') || 'GENERAL';
+        let isDarkMode = localStorage.getItem('packmate_dark') === 'true';
+        let lists = JSON.parse(localStorage.getItem('packmate_lists')) || {};
+        let celebrated = {};
+
+        // Initialization
+        function init() {
+            if (Object.keys(lists).length === 0) {
+                Object.keys(HOLIDAY_TYPES).forEach(key => {
+                    lists[key] = HOLIDAY_TYPES[key].items.map(name => ({ id: Math.random().toString(36).substr(2, 9), name, packed: false }));
+                });
+            }
+            applyTheme();
+            renderTypeSelector();
+            renderList();
+        }
+
+        // Theme
+        function applyTheme() {
+            if (isDarkMode) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            const icon = document.getElementById('theme-icon');
+            icon.setAttribute('data-lucide', isDarkMode ? 'sun' : 'moon');
+            lucide.createIcons();
+            localStorage.setItem('packmate_dark', isDarkMode);
+        }
+
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            isDarkMode = !isDarkMode;
+            applyTheme();
+        });
+
+        // Rendering
+        function renderTypeSelector() {
+            const container = document.getElementById('type-selector');
+            container.innerHTML = '';
+            Object.values(HOLIDAY_TYPES).forEach(config => {
+                const isActive = currentType === config.id;
+                const btn = document.createElement('button');
+                btn.className = `flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all ${isActive ? config.color + ' border-current scale-105 z-10' : 'bg-white dark:bg-slate-900 border-transparent text-slate-400 dark:text-slate-600'}`;
+                btn.innerHTML = `<i data-lucide="${config.icon}" class="w-6 h-6 mb-1"></i><span class="text-[10px] uppercase font-bold">${config.label}</span>`;
+                btn.onclick = () => {
+                    currentType = config.id;
+                    localStorage.setItem('packmate_type', currentType);
+                    renderTypeSelector();
+                    renderList();
+                };
+                container.appendChild(btn);
+            });
+            lucide.createIcons();
+        }
+
+        function renderList() {
+            const config = HOLIDAY_TYPES[currentType];
+            const items = lists[currentType] || [];
+            const packedCount = items.filter(i => i.packed).length;
+            const totalCount = items.length;
+            const percent = totalCount === 0 ? 0 : Math.round((packedCount / totalCount) * 100);
+
+            // Update Header
+            const header = document.getElementById('progress-header');
+            header.className = `p-6 transition-colors duration-500 ${config.color}`;
+            document.getElementById('category-title').innerHTML = `<i data-lucide="${config.icon}" class="w-6 h-6"></i>${config.label} Holiday`;
+            document.getElementById('progress-text').innerText = `${packedCount} of ${totalCount} items packed`;
+            document.getElementById('progress-percent').innerText = `${percent}%`;
+            const bar = document.getElementById('progress-bar');
+            bar.style.width = `${percent}%`;
+            bar.className = `h-full transition-all duration-700 ease-out ${percent === 100 ? 'bg-emerald-500' : 'bg-current'}`;
+
+            // Check for confetti
+            if (percent === 100 && totalCount > 0 && !celebrated[currentType]) {
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                celebrated[currentType] = true;
+            } else if (percent < 100) {
+                celebrated[currentType] = false;
+            }
+
+            // Render Items
+            const container = document.getElementById('items-container');
+            container.innerHTML = '';
+            
+            if (items.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 text-slate-500"><i data-lucide="clipboard-list" class="w-12 h-12 mx-auto mb-3 opacity-20"></i><p>Your list is empty.</p></div>`;
+            } else {
+                items.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = `flex items-center group gap-3 p-3 rounded-xl border transition-all cursor-pointer ${item.packed ? 'bg-emerald-50 dark:bg-emerald-950/20 border-emerald-100 dark:border-emerald-900/50 opacity-60' : 'bg-white dark:bg-slate-800/50 border-slate-100 dark:border-slate-700 hover:border-blue-500/50'}`;
+                    itemDiv.onclick = () => toggleItem(item.id);
+                    
+                    itemDiv.innerHTML = `
+                        <button class="transition-colors ${item.packed ? 'text-emerald-500' : 'text-slate-500'}">
+                            <i data-lucide="${item.packed ? 'check-circle-2' : 'circle'}" class="w-6 h-6"></i>
+                        </button>
+                        <span class="flex-1 font-medium ${item.packed ? 'line-through text-slate-500' : 'text-slate-700 dark:text-slate-200'}">${item.name}</span>
+                        <button onclick="event.stopPropagation(); deleteItem('${item.id}')" class="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-red-500 transition-all">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    `;
+                    container.appendChild(itemDiv);
+                });
+            }
+            lucide.createIcons();
+            save();
+        }
+
+        // Handlers
+        function toggleItem(id) {
+            lists[currentType] = lists[currentType].map(i => i.id === id ? { ...i, packed: !i.packed } : i);
+            renderList();
+        }
+
+        function deleteItem(id) {
+            lists[currentType] = lists[currentType].filter(i => i.id !== id);
+            renderList();
+        }
+
+        document.getElementById('add-item-form').onsubmit = (e) => {
+            e.preventDefault();
+            const input = document.getElementById('new-item-input');
+            const name = input.value.trim();
+            if (!name) return;
+            lists[currentType].push({ id: Date.now().toString(), name, packed: false });
+            input.value = '';
+            renderList();
+        };
+
+        document.getElementById('reset-btn').onclick = () => {
+            lists[currentType] = HOLIDAY_TYPES[currentType].items.map(name => ({ id: Math.random().toString(36).substr(2, 9), name, packed: false }));
+            celebrated[currentType] = false;
+            renderList();
+        };
+
+        function save() {
+            localStorage.setItem('packmate_lists', JSON.stringify(lists));
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
